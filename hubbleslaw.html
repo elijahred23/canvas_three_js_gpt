@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hubble's Law Animation</title>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+	<script>
+		// Set up the canvas and context
+		const canvas = document.getElementById("canvas");
+		const ctx = canvas.getContext("2d");
+
+		// Set up the stars and galaxies
+		const numObjects = 100;
+		let objects = [];
+		for (let i = 0; i < numObjects; i++) {
+			objects.push({
+				x: Math.random() * canvas.width,
+				y: Math.random() * canvas.height,
+				radius: Math.random() * 5 + 1,
+				color: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`,
+				distance: Math.random() * 5000
+			});
+		}
+
+		// Define Hubble's law parameters
+		const H0 = 70;  // km/s/Mpc
+		const scaleFactor = 0.2;  // pixels/km/s
+
+		// Set up the animation loop
+		function animate() {
+			// Clear the canvas
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// Move the stars and galaxies based on Hubble's law
+			for (let i = 0; i < numObjects; i++) {
+				// Calculate the velocity of the object based on Hubble's law
+				const velocity = H0 * objects[i].distance;
+
+				// Calculate the distance the object should move based on Hubble's law
+				const distanceMoved = velocity * scaleFactor;
+
+				// Move the object in the x and y directions
+				objects[i].x += Math.random() * 2 - 1;
+				objects[i].y += Math.random() * 2 - 1;
+
+				// Move the object in the z direction (towards us or away from us)
+				if (objects[i].distance < 1) {
+					objects[i].distance = 0.1;
+				}
+				objects[i].distance += distanceMoved;
+
+				// Draw the object on the canvas
+				ctx.beginPath();
+				ctx.fillStyle = objects[i].color;
+				ctx.arc(objects[i].x, objects[i].y, objects[i].radius, 0, Math.PI * 2);
+				ctx.fill();
+			}
+
+			// Request the next animation frame
+			requestAnimationFrame(animate);
+		}
+
+		// Start the animation loop
+		animate();
+	</script>
+</body>
+</html>

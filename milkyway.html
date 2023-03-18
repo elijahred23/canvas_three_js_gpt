@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Spiral Galaxy Simulation</title>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+	<script>
+		// Set up the canvas and context
+		const canvas = document.getElementById("canvas");
+		const ctx = canvas.getContext("2d");
+
+		// Define the galaxy parameters
+		const centerX = canvas.width / 2;
+		const centerY = canvas.height / 2;
+		const armCount = 4;
+		const armWidth = 20;
+		const armLength = 200;
+		const armSeparation = 30;
+		const armAngleStep = 0.05;
+		const armAngleOffset = Math.PI / 2;
+		const armSpeed = 0.01;
+
+		// Define a function to draw a spiral arm
+		function drawArm(x, y, armLength, armWidth, armAngle, armSpeed) {
+			ctx.beginPath();
+			ctx.lineWidth = armWidth;
+			ctx.strokeStyle = "white";
+
+			for (let i = 0; i < armLength; i++) {
+				// Calculate the position of the point on the arm
+				const angle = armAngle + armAngleStep * i;
+				const radius = i / armLength * armWidth;
+				const armX = x + radius * Math.cos(angle);
+				const armY = y + radius * Math.sin(angle);
+
+				// Draw a line from the previous point to the current point
+				if (i === 0) {
+					ctx.moveTo(armX, armY);
+				} else {
+					ctx.lineTo(armX, armY);
+				}
+
+				// Update the angle for the next point
+				armAngle += armSpeed;
+			}
+
+			ctx.stroke();
+		}
+
+		// Draw the spiral arms
+		for (let i = 0; i < armCount; i++) {
+			// Calculate the position of the arm
+			const angle = i * (Math.PI / 2) + armAngleOffset;
+			const armX = centerX + armSeparation * Math.cos(angle);
+			const armY = centerY + armSeparation * Math.sin(angle);
+
+			// Draw the arm
+			drawArm(armX, armY, armLength, armWidth, angle, armSpeed);
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+
+        // set up the scene
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // create the balls
+        var ballCount = 100;
+        var ballDistance = 10;
+        var balls = [];
+
+        for (var i = 0; i < ballCount; i++) {
+            var geometry = new THREE.SphereGeometry(0.2, 32, 32);
+            var material = new THREE.MeshBasicMaterial({ color: 0xff3333 });
+            var ball = new THREE.Mesh(geometry, material);
+            ball.position.x = Math.random() * ballDistance - ballDistance / 2;
+            ball.position.y = Math.random() * ballDistance - ballDistance / 2;
+            ball.position.z = Math.random() * ballDistance - ballDistance / 2;
+            balls.push(ball);
+            scene.add(ball);
+        }
+
+        // animate the balls
+        var animate = function () {
+            requestAnimationFrame(animate);
+
+            // calculate the relative distance between each ball
+            for (var i = 0; i < ballCount; i++) {
+                for (var j = i + 1; j < ballCount; j++) {
+                    var distance = balls[i].position.distanceTo(balls[j].position);
+
+                    // apply Hubble's law to the balls
+                    var velocity = distance / 10;
+                    balls[i].position.x += velocity * (balls[i].position.x - balls[j].position.x) / distance;
+                    balls[i].position.y += velocity * (balls[i].position.y - balls[j].position.y) / distance;
+                    balls[i].position.z += velocity * (balls[i].position.z - balls[j].position.z) / distance;
+
+                    balls[j].position.x -= velocity * (balls[i].position.x - balls[j].position.x) / distance;
+                    balls[j].position.y -= velocity * (balls[i].position.y - balls[j].position.y) / distance;
+                    balls[j].position.z -= velocity * (balls[i].position.z - balls[j].position.z) / distance;
+                }
+            }
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+    </script>
+</body>
+
+</html>

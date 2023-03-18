@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <canvas id="canvas"></canvas>
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        var renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("canvas"), antialias: true });
+        renderer.setClearColor("#000000");
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        var ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+        var ballMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        var ball = new THREE.Mesh(ballGeometry, ballMaterial);
+        scene.add(ball);
+
+        var ballPosition = new THREE.Vector3(0, 0, 0);
+        var ballVelocity = new THREE.Vector3(0.1, 0.1, 0.1);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ballPosition.add(ballVelocity);
+            if (ballPosition.x > 2.5 || ballPosition.x < -2.5) {
+                ballVelocity.x = -ballVelocity.x;
+            }
+            if (ballPosition.y > 2.5 || ballPosition.y < -2.5) {
+                ballVelocity.y = -ballVelocity.y;
+            }
+            if (ballPosition.z > 2.5 || ballPosition.z < -2.5) {
+                ballVelocity.z = -ballVelocity.z;
+            }
+            ball.position.copy(ballPosition);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+    </script>
+</body>
+
+</html>

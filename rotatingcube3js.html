@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+
+        // Set up the scene
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create the cube model
+        var cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+        var cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        scene.add(cube);
+
+        // Add black edges to the cube
+        var edges = new THREE.EdgesGeometry(cubeGeometry);
+        var lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+        var edgesLine = new THREE.LineSegments(edges, lineMaterial);
+        cube.add(edgesLine);
+
+        // Animate the cube model
+        var animate = function () {
+            requestAnimationFrame(animate);
+
+            // Rotate the cube model around the x and y axes
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+
+    </script>
+</body>
+
+</html>

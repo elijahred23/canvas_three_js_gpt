@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Rotating Ball with Lighting Effect</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define ball parameters
+		var ballRadius = 50;
+		var ballX = canvas.width / 2;
+		var ballY = canvas.height / 2;
+
+		// define lighting parameters
+		var lightX = ballX;
+		var lightY = ballY - ballRadius;
+		var lightRadius = ballRadius * 2;
+		var lightOpacity = 0.2;
+
+		// draw ball with lighting effect
+		function drawBall() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// create radial gradient for ball fill
+			var gradient = ctx.createRadialGradient(ballX, ballY, 0, ballX, ballY, ballRadius);
+			gradient.addColorStop(0, "#ffffff");
+			gradient.addColorStop(0.2, "#ffffff");
+			gradient.addColorStop(0.4, "#f0f0f0");
+			gradient.addColorStop(0.6, "#c0c0c0");
+			gradient.addColorStop(0.8, "#808080");
+			gradient.addColorStop(1, "#000000");
+
+			// create radial gradient for lighting effect
+			var lightGradient = ctx.createRadialGradient(lightX, lightY, 0, lightX, lightY, lightRadius);
+			lightGradient.addColorStop(0, "rgba(255, 255, 255, " + lightOpacity + ")");
+			lightGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+			// draw lighting effect
+			ctx.globalCompositeOperation = "lighter";
+			ctx.fillStyle = lightGradient;
+			ctx.beginPath();
+			ctx.arc(lightX, lightY, lightRadius, 0, Math.PI * 2, false);
+			ctx.fill();
+			ctx.closePath();
+
+			// draw ball
+			ctx.globalCompositeOperation = "source-over";
+			ctx.beginPath();
+			ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2, false);
+			ctx.fillStyle = gradient;
+			ctx.fill();
+			ctx.closePath();
+		}
+
+		// animate ball rotation and lighting effect
+		function animate() {
+			requestAnimationFrame(animate);
+
+			// rotate ball
+			ballX = canvas.width / 2 + ballRadius * Math.cos(Date.now() / 1000);
+			ballY = canvas.height / 2 + ballRadius * Math.sin(Date.now() / 1000);
+
+			// update lighting position
+			lightX = ballX;
+			lightY = ballY - ballRadius;
+
+			drawBall();
+		}
+
+		animate();
+	</script>
+</body>
+</html>

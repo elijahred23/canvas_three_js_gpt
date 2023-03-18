@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rotating Donut</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+
+      const numVertices = 4000;
+      const vertices = [];
+
+      // Define donut dimensions
+      const R1 = 100;
+      const R2 = 40;
+
+      // Define rotation angles
+      let theta = 0;
+      let phi = 0;
+
+      function init() {
+        for (let i = 0; i < numVertices; i++) {
+          const u = Math.random() * 2 * Math.PI;
+          const v = Math.random() * 2 * Math.PI;
+          const x = (R1 + R2 * Math.cos(v)) * Math.cos(u);
+          const y = (R1 + R2 * Math.cos(v)) * Math.sin(u);
+          const z = R2 * Math.sin(v);
+          vertices.push({ x, y, z });
+        }
+      }
+
+      function draw() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        context.translate(centerX, centerY);
+        context.rotate(phi);
+        context.rotate(theta);
+        for (let i = 0; i < numVertices; i++) {
+          const vertex = vertices[i];
+          const x2d =
+            (vertex.x * Math.cos(theta) +
+              vertex.z * Math.sin(theta)) *
+              Math.cos(phi) -
+            vertex.y * Math.sin(phi);
+          const y2d =
+            vertex.x * Math.sin(theta) -
+            vertex.z * Math.cos(theta);
+          const radius = 2;
+          context.beginPath();
+          context.arc(x2d, y2d, radius, 0, 2 * Math.PI);
+          context.fillStyle = "#000000";
+          context.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+
+      init();
+      draw();
+
+      // Add event listeners to rotate the donut on mouse move
+      canvas.addEventListener("mousemove", function (event) {
+        theta = (event.clientX - canvas.width / 2) * 0.001;
+        phi = (event.clientY - canvas.height / 2) * 0.001;
+      });
+    </script>
+  </body>
+</html>

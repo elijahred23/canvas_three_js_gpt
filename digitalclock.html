@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Digital Clock</title>
+    <style>
+        canvas {
+            display: block;
+            margin: auto;
+            border: 1px solid black;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // get canvas element
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+
+        // define canvas dimensions
+        var canvasWidth = canvas.width = window.innerWidth;
+        var canvasHeight = canvas.height = window.innerHeight;
+
+        // define function to draw clock digits
+        function drawDigit(x, y, digit) {
+            var segments = [
+                [[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]], // 0
+                [[2, 1], [2, 2]], // 1
+                [[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]], // 2
+                [[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]], // 3
+                [[1, 1], [1, 2], [2, 2], [2, 1]], // 4
+                [[2, 1], [1, 1], [1, 2], [2, 2], [2, 1]], // 5
+                [[2, 1], [1, 1], [1, 2], [2, 2], [2, 1]], // 6
+                [[1, 1], [2, 1], [2, 2]], // 7
+                [[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]], // 8
+                [[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]] // 9
+            ];
+
+            var segmentWidth = canvasWidth / 20;
+            var segmentHeight = canvasHeight / 5;
+            var segmentGap = canvasWidth / 100;
+
+            ctx.fillStyle = "#FFC107";
+            ctx.strokeStyle = "#FFC107";
+            ctx.lineWidth = canvasWidth / 200;
+
+            for (var i = 0; i < segments[digit].length; i++) {
+                var segment = segments[digit][i];
+                var segmentX = x + segment[0] * segmentWidth + segmentGap;
+                var segmentY = y + segment[1] * segmentHeight + segmentGap;
+                var segmentWidth = segmentWidth - segmentGap * 2;
+                var segmentHeight = segmentHeight - segmentGap * 2;
+
+                ctx.beginPath();
+                ctx.rect(segmentX, segmentY, segmentWidth, segmentHeight);
+                ctx.fill();
+                ctx.stroke();
+            }
+        }
+
+        // define function to draw clock
+        function drawClock() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            var digitWidth = canvasWidth / 5;
+            var digitHeight = canvasHeight / 2
+            // draw hour digits
+            drawDigit(digitWidth * 1, digitHeight * 0.2, Math.floor(hours / 10));
+            drawDigit(digitWidth * 2, digitHeight * 0.2, hours % 10);
+
+            // draw minute digits
+            drawDigit(digitWidth * 3, digitHeight * 0.2, Math.floor(minutes / 10));
+            drawDigit(digitWidth * 4, digitHeight * 0.2, minutes % 10);
+
+            // draw second digits
+            drawDigit(digitWidth * 6, digitHeight * 0.2, Math.floor(seconds / 10));
+            drawDigit(digitWidth * 7, digitHeight * 0.2, seconds % 10);
+        }
+
+        // update clock every second
+        setInterval(drawClock, 1000);
+    </script>
+    </body>
+    </html>

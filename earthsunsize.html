@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sun-Earth Size Comparison</title>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+	<script>
+		// Set up the canvas and context
+		const canvas = document.getElementById("canvas");
+		const ctx = canvas.getContext("2d");
+
+		// Set up the Sun and Earth sizes
+		const sunSize = 100;  // in pixels
+		const earthSize = sunSize / 109;  // in pixels
+
+		// Draw the Sun
+		ctx.beginPath();
+		ctx.fillStyle = "yellow";
+		ctx.arc(canvas.width / 2, canvas.height / 2, sunSize / 2, 0, Math.PI * 2);
+		ctx.fill();
+
+		// Draw the Earth
+		ctx.beginPath();
+		ctx.fillStyle = "blue";
+		ctx.arc(canvas.width / 2 - sunSize / 2 - earthSize / 2, canvas.height / 2, earthSize / 2, 0, Math.PI * 2);
+		ctx.fill();
+
+		// Add labels for the Sun and Earth
+		ctx.font = "16px Arial";
+		ctx.fillStyle = "black";
+		ctx.fillText("Sun", canvas.width / 2 - sunSize / 2, canvas.height / 2 + sunSize / 2 + 20);
+		ctx.fillText("Earth", canvas.width / 2 - sunSize / 2 - earthSize / 2, canvas.height / 2 + earthSize / 2 + 20);
+	</script>
+</body>
+</html>

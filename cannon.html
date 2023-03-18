@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Three.js Cannon</title>
+    <script src="https://threejs.org/build/three.min.js"></script>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.querySelector("#canvas");
+
+      // Set up Three.js environment
+      const renderer = new THREE.WebGLRenderer({ canvas });
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        canvas.width / canvas.height,
+        0.1,
+        1000
+      );
+      camera.position.set(0, 0, 5);
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+      // Create cannon base
+      const baseGeometry = new THREE.CylinderGeometry(0.5, 0.5, 2, 32);
+      const baseMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      const cannonBase = new THREE.Mesh(baseGeometry, baseMaterial);
+      scene.add(cannonBase);
+
+      // Create pivot point for cannon
+      const pivot = new THREE.Object3D();
+      pivot.position.set(0, 1, 0);
+      cannonBase.add(pivot);
+
+      // Create cannonball
+      const ballGeometry = new THREE.SphereGeometry(0.25, 32, 32);
+      const ballMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const cannonball = new THREE.Mesh(ballGeometry, ballMaterial);
+      cannonball.position.set(0, 1, 0);
+      scene.add(cannonball);
+
+      // Set up animation loop
+      let angle = 0;
+      let velocity = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // Update cannonball position and velocity
+        const radians = angle * (Math.PI / 180);
+        cannonball.position.x = 2 * Math.sin(radians);
+        cannonball.position.y = 1 + 2 * Math.cos(radians);
+        cannonball.position.z = 0;
+        velocity += 0.001;
+        angle += velocity;
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+  </body>
+</html>

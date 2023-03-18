@@ -1,0 +1,60 @@
+<html>
+
+<body>
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+
+// Set up the scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Add a light source
+const pointLight = new THREE.PointLight(0xffffff);
+pointLight.position.set(0, 0, 0);
+scene.add(pointLight);
+
+// Create a function to generate a sphere (proton or electron)
+function createSphere(radius, segments, material) {
+  const geometry = new THREE.SphereGeometry(radius, segments, segments);
+  const sphere = new THREE.Mesh(geometry, material);
+  scene.add(sphere);
+  return sphere;
+}
+
+// Create the proton
+const protonMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+const proton = createSphere(0.5, 32, protonMaterial);
+proton.position.set(0, 0, 0);
+
+// Create the electron
+const electronMaterial = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+const electron = createSphere(0.2, 32, electronMaterial);
+
+// Set initial position of the electron
+const electronOrbitRadius = 5;
+electron.position.set(electronOrbitRadius, 0, 0);
+
+camera.position.z = 10;
+
+// Animation loop
+function animate() {
+  requestAnimationFrame(animate);
+
+  // Update electron position
+  const electronSpeed = 0.02;
+  const angle = Date.now() * electronSpeed;
+  electron.position.x = electronOrbitRadius * Math.cos(angle);
+  electron.position.z = electronOrbitRadius * Math.sin(angle);
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Buzzing Bees</title>
+    <style>
+        canvas {
+            display: block;
+            margin: auto;
+            border: 1px solid black;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // get canvas element
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+
+        // define canvas dimensions
+        var canvasWidth = canvas.width = window.innerWidth;
+        var canvasHeight = canvas.height = window.innerHeight;
+
+        // define bee objects
+        var bees = [];
+        for (var i = 0; i < 10; i++) {
+            var bee = {
+                x: Math.random() * canvasWidth,
+                y: Math.random() * canvasHeight,
+                radius: 20,
+                angle: Math.random() * Math.PI * 2,
+                speed: 5,
+                color: "#FFC107"
+            };
+            bees.push(bee);
+        }
+
+        // define function to update bee position
+        function updateBee(bee) {
+            bee.x += Math.cos(bee.angle) * bee.speed;
+            bee.y += Math.sin(bee.angle) * bee.speed;
+
+            if (bee.x - bee.radius < 0 || bee.x + bee.radius > canvasWidth) {
+                bee.angle = Math.PI - bee.angle;
+            } else if (bee.y - bee.radius < 0 || bee.y + bee.radius > canvasHeight) {
+                bee.angle = -bee.angle;
+            }
+        }
+
+        // define function to draw bee
+        function drawBee(bee) {
+            var offset = Math.sin(Date.now() * 0.03) * 5;
+            var x = bee.x + offset;
+            var y = bee.y + offset;
+
+            ctx.beginPath();
+            ctx.arc(x, y, bee.radius, 0, Math.PI * 2);
+            ctx.fillStyle = bee.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // define function to animate buzzing bees
+        function animate() {
+            requestAnimationFrame(animate);
+
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            for (var i = 0; i < bees.length; i++) {
+                updateBee(bees[i]);
+                drawBee(bees[i]);
+            }
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,85 @@
+<head>
+    <style>
+        #myCanvas{
+            width:100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let angleX = 0;
+        let angleY = 0;
+
+        function drawPyramid() {
+            const vertices = [[-100, -100, -100],
+            [100, -100, -100],
+            [100, -100, 100],
+            [-100, -100, 100],
+            [0, 100, 0]
+            ];
+
+            const edges = [[0, 1],
+            [1, 2],
+            [2, 3],
+            [3, 0],
+            [0, 4],
+            [1, 4],
+            [2, 4],
+            [3, 4]
+            ];
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+
+            for (const edge of edges) {
+                const startPoint = vertices[edge[0]];
+                const endPoint = vertices[edge[1]];
+
+                const x1 = startPoint[0];
+                const y1 = startPoint[1];
+                const z1 = startPoint[2];
+
+                const x2 = endPoint[0];
+                const y2 = endPoint[1];
+                const z2 = endPoint[2];
+
+                // Rotate the pyramid around the X and Y axes
+                const rotatedStartPoint = [x1 * Math.cos(angleY) - z1 * Math.sin(angleY), y1 * Math.cos(angleX) - z1 * Math.sin(angleX), x1 * Math.sin(angleY) + z1 * Math.cos(angleY)];
+
+                const rotatedEndPoint = [x2 * Math.cos(angleY) - z2 * Math.sin(angleY), y2 * Math.cos(angleX) - z2 * Math.sin(angleX), x2 * Math.sin(angleY) + z2 * Math.cos(angleY)];
+
+                // Perspective projection
+                const scaleFactor = 500 / (500 + rotatedStartPoint[2]);
+                const projectedStartPoint = [rotatedStartPoint[0] * scaleFactor + canvas.width / 2,
+                rotatedStartPoint[1] * scaleFactor + canvas.height / 2
+                ];
+
+                const scaleFactor2 = 500 / (500 + rotatedEndPoint[2]);
+                const projectedEndPoint = [rotatedEndPoint[0] * scaleFactor2 + canvas.width / 2,
+                rotatedEndPoint[1] * scaleFactor2 + canvas.height / 2
+                ];
+
+                ctx.moveTo(projectedStartPoint[0], projectedStartPoint[1]);
+                ctx.lineTo(projectedEndPoint[0], projectedEndPoint[1]);
+            }
+
+            ctx.stroke();
+        }
+
+        function animate() {
+            angleX += 0.005;
+            angleY += 0.007;
+            drawPyramid();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+
+    </script>
+</body>

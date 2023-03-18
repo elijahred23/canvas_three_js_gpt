@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Zero Gravity Simulator</title>
+	<style>
+		canvas {
+			display: block;
+			margin: auto;
+			border: 1px solid black;
+			border-radius: 10px;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define canvas dimensions
+		var canvasWidth = canvas.width = window.innerWidth;
+		var canvasHeight = canvas.height = window.innerHeight;
+
+		// define ball class
+		class Ball {
+			constructor(x, y, radius, color, speedX, speedY) {
+				this.x = x;
+				this.y = y;
+				this.radius = radius;
+				this.color = color;
+				this.speedX = speedX;
+				this.speedY = speedY;
+			}
+
+			// update ball position
+			update() {
+				this.x += this.speedX;
+				this.y += this.speedY;
+
+				if (this.x - this.radius < 0 || this.x + this.radius > canvasWidth) {
+					this.speedX = -this.speedX;
+				} 
+				if (this.y - this.radius < 0 || this.y + this.radius > canvasHeight) {
+					this.speedY = -this.speedY;
+				}
+			}
+
+			// draw ball on canvas
+			draw() {
+				ctx.beginPath();
+				ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+				ctx.fillStyle = this.color;
+				ctx.fill();
+				ctx.closePath();
+			}
+		}
+
+		// create array of balls
+		var balls = [];
+		for (var i = 0; i < 10; i++) {
+			var radius = Math.random() * 30 + 10;
+			var color = "#"+((1<<24)*Math.random()|0).toString(16);
+			var x = Math.random() * (canvasWidth - radius * 2) + radius;
+			var y = Math.random() * (canvasHeight - radius * 2) + radius;
+			var speedX = 0;
+			var speedY = 0;
+			var ball = new Ball(x, y, radius, color, speedX, speedY);
+			balls.push(ball);
+		}
+
+		// define function to update ball speeds based on mouse position
+		function updateBalls() {
+			for (var i = 0; i < balls.length; i++) {
+				var dx = canvasWidth / 2 - balls[i].x;
+				var dy = canvasHeight / 2 - balls[i].y;
+				var distance = Math.sqrt(dx * dx + dy * dy);
+				var acceleration = distance * 0.0001;
+
+				balls[i].speedX += dx * acceleration;
+				balls[i].speedY += dy * acceleration;
+			}
+		}
+
+		// define function to animate zero gravity simulator
+		function animate() {
+			requestAnimationFrame(animate);
+
+			ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+			updateBalls();
+			for (var i = 0; i < balls.length; i++) {
+				balls[i].update();
+				balls[i].draw();
+			}
+		}
+
+		animate();
+	</script>
+</body>
+</html>

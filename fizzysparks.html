@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Fizzy Sparks</title>
+	<style>
+		canvas {
+			display: block;
+			margin: auto;
+			border: 1px solid black;
+			border-radius: 10px;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define canvas dimensions
+		var canvasWidth = canvas.width = window.innerWidth;
+		var canvasHeight = canvas.height = window.innerHeight;
+
+		// define variables for fizzy sparks
+		var sparks = [];
+		var maxSparks = 1000;
+		var sparkSize = canvasWidth / 150;
+		var sparkSpeed = canvasWidth / 100;
+		var gravity = canvasWidth / 2000;
+		var mouse = {
+			x: canvasWidth / 2,
+			y: canvasHeight / 2
+		};
+		var colors = ["#FFC107", "#FF5722", "#8BC34A", "#2196F3", "#9C27B0"];
+
+		// define function to create new sparks
+		function createSpark(x, y) {
+			if (sparks.length < maxSparks) {
+				var spark = {
+					x: x,
+					y: y,
+					vx: (Math.random() - 0.5) * sparkSpeed,
+					vy: (Math.random() - 0.5) * sparkSpeed,
+					color: colors[Math.floor(Math.random() * colors.length)]
+				};
+
+				sparks.push(spark);
+			}
+		}
+
+		// define function to update spark positions
+		function updateSparks() {
+			for (var i = 0; i < sparks.length; i++) {
+				var spark = sparks[i];
+
+				spark.vy += gravity;
+
+				spark.x += spark.vx;
+				spark.y += spark.vy;
+
+				if (spark.x < -sparkSize || spark.x > canvasWidth + sparkSize || spark.y > canvasHeight + sparkSize) {
+					sparks.splice(i, 1);
+					i--;
+				}
+			}
+		}
+
+		// define function to draw sparks
+		function drawSparks() {
+			for (var i = 0; i < sparks.length; i++) {
+				var spark = sparks[i];
+
+				ctx.beginPath();
+				ctx.arc(spark.x, spark.y, sparkSize, 0, Math.PI * 2);
+				ctx.fillStyle = spark.color;
+				ctx.shadowColor = spark.color;
+				ctx.shadowBlur = sparkSize * 1.5;
+				ctx.fill();
+			}
+		}
+
+		// define function to handle mouse movement
+		function handleMouseMove(event) {
+			mouse.x = event.clientX;
+			mouse.y = event.clientY;
+		}
+
+		// add event listener for mouse movement
+		canvas.addEventListener("mousemove", handleMouseMove);
+
+		// define function to loop animation
+		function loop() {
+			requestAnimationFrame(loop);
+
+			createSpark(mouse.x, mouse.y);
+			updateSparks();
+			drawSparks();
+		}
+
+		// start animation loop
+		loop();
+	</script>
+</body>
+</html>

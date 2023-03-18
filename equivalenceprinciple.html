@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Equivalence Principle Simulation</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      // Define the canvas element and its 2D context
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+
+      // Set the width and height of the canvas to the window size
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      // Define some constants for the simulation
+      const g = 9.8; // Acceleration due to gravity in m/s^2
+      const mass = 10; // Mass of the test particle in kg
+      const radius = 10; // Radius of the test particle in pixels
+      const earthMass = 5.97 * Math.pow(10, 24); // Mass of the Earth in kg
+      const earthRadius = 6371 * 1000; // Radius of the Earth in meters
+      const scale = 10000; // Scale factor for the simulation
+
+      // Define a function to calculate the gravitational force on the test particle
+      function calculateForce(position) {
+        const distanceFromCenter = Math.sqrt(Math.pow(position.x - canvas.width / 2, 2) + Math.pow(position.y - canvas.height / 2, 2)) / scale;
+        const forceMagnitude = g * (mass * earthMass) / Math.pow(distanceFromCenter + earthRadius, 2);
+        const forceDirection = {
+          x: (canvas.width / 2 - position.x) / distanceFromCenter,
+          y: (canvas.height / 2 - position.y) / distanceFromCenter,
+        };
+        return {
+          x: forceMagnitude * forceDirection.x,
+          y: forceMagnitude * forceDirection.y,
+        };
+      }
+
+      // Define a function to simulate the motion of the test particle
+      function simulateMotion() {
+        // Define the initial position and velocity of the test particle
+        let position = {
+          x: canvas.width / 2,
+          y: canvas.height / 4,
+        };
+        let velocity = {
+          x: 0,
+          y: 0,
+        };
+
+        // Define a function to update the position and velocity of the test particle
+        function update() {
+          // Calculate the net force on the test particle
+          const force = calculateForce(position);
+
+          // Calculate the acceleration of the test particle
+          const acceleration = {
+            x: force.x / mass,
+            y: force.y / mass,
+          };
+
+          // Update the velocity of the test particle
+          velocity.x += acceleration.x;
+          velocity.y += acceleration.y;
+
+          // Update the position of the test particle
+          position.x += velocity.x;
+          position.y += velocity.y;
+
+          // Render the test particle on the canvas
+          context.beginPath();
+          context.arc(position.x, position.y, radius, 0, 2 * Math.PI);
+          context.fillStyle = "red";
+          context.fill();
+
+          // Request the next frame of animation
+          requestAnimationFrame(update);
+        }
+
+        // Start the animation loop
+        update();
+      }
+
+      // Simulate the motion of the test particle on the canvas
+      simulateMotion();
+    </script>
+  </body>
+</html>

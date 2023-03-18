@@ -1,0 +1,79 @@
+<head>
+    <style>
+        #myCanvas {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="myCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let angleX = 0;
+        let angleY = 0;
+
+        function drawSphere() {
+            const radius = 100;
+            const latitudeLines = 20;
+            const longitudeLines = 20;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+
+            for (let i = 0; i <= latitudeLines; i++) {
+                const theta = (i * Math.PI) / latitudeLines;
+                const sinTheta = Math.sin(theta);
+                const cosTheta = Math.cos(theta);
+
+                for (let j = 0; j <= longitudeLines; j++) {
+                    const phi = (j * 2 * Math.PI) / longitudeLines;
+                    const sinPhi = Math.sin(phi);
+                    const cosPhi = Math.cos(phi);
+
+                    const x = cosPhi * sinTheta * radius;
+                    const y = cosTheta * radius;
+                    const z = sinPhi * sinTheta * radius;
+
+                    // Rotate the sphere around the X and Y axes
+                    const rotatedX =
+                        x * Math.cos(angleY) - z * Math.sin(angleY) * Math.cos(angleX);
+                    const rotatedY =
+                        y * Math.cos(angleX) -
+                        z * Math.sin(angleX) -
+                        x * Math.sin(angleY) * Math.sin(angleX);
+                    const rotatedZ =
+                        z * Math.cos(angleY) * Math.cos(angleX) +
+                        x * Math.sin(angleY) * Math.cos(angleX) +
+                        y * Math.sin(angleX);
+
+                    // Perspective projection
+                    const scaleFactor = 500 / (500 + rotatedZ);
+                    const projectedX = rotatedX * scaleFactor + canvas.width / 2;
+                    const projectedY = rotatedY * scaleFactor + canvas.height / 2;
+
+                    if (j === 0) {
+                        ctx.moveTo(projectedX, projectedY);
+                    } else {
+                        ctx.lineTo(projectedX, projectedY);
+                    }
+                }
+            }
+
+            ctx.stroke();
+        }
+
+        function animate() {
+            angleX += 0.005;
+            angleY += 0.007;
+            drawSphere();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+    </script>
+</body>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML Canvas Cool Fireworks</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define firework parameters
+		var particles = [];
+		var gravity = 0.2;
+		var friction = 0.98;
+		var colors = ["#DF1F2D", "#B11313", "#2b3784", "#447BBE"];
+
+		// create particles
+		function createParticles(x, y) {
+			for (var i = 0; i < 100; i++) {
+				var particle = {
+					x: x,
+					y: y,
+					speed: Math.random() * 5,
+					direction: Math.random() * Math.PI * 2,
+					gravity: gravity,
+					friction: friction,
+					radius: Math.random() * 3,
+					color: colors[Math.floor(Math.random() * colors.length)]
+				};
+
+				particles.push(particle);
+			}
+		}
+
+		// draw particles
+		function drawParticles() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			for (var i = 0; i < particles.length; i++) {
+				var particle = particles[i];
+
+				ctx.beginPath();
+				ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+				ctx.fillStyle = particle.color;
+				ctx.fill();
+
+				// update particle position and speed
+				particle.x += Math.cos(particle.direction) * particle.speed;
+				particle.y += Math.sin(particle.direction) * particle.speed;
+				particle.speed *= particle.friction;
+				particle.gravity += 0.01;
+				particle.y += particle.gravity;
+
+				// remove particles that fall off the screen
+				if (particle.x < -particle.radius ||
+				    particle.x > canvas.width + particle.radius ||
+				    particle.y > canvas.height + particle.radius) {
+					particles.splice(i, 1);
+					i--;
+				}
+			}
+		}
+
+		// animate fireworks
+		function animate() {
+			requestAnimationFrame(animate);
+			drawParticles();
+		}
+
+		// create fireworks when mouse is clicked
+		canvas.addEventListener("mousedown", function(event) {
+			createParticles(event.clientX, event.clientY);
+		});
+
+		animate();
+	</script>
+</body>
+</html>

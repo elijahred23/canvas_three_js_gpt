@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cosmic Microwave Background Radiation Simulation</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      // Define the canvas element and its 2D context
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+
+      // Set the width and height of the canvas to the window size
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      // Define some constants for the simulation
+      const temperature = 2.725; // CMB temperature in Kelvin
+      const wavelength = 1.06; // Peak wavelength in mm
+      const frequency = 2.84; // Frequency in GHz
+      const h = 6.626 * Math.pow(10, -34); // Planck's constant
+      const k = 1.381 * Math.pow(10, -23); // Boltzmann's constant
+      const c = 299792458; // Speed of light
+
+      // Define a function to calculate the intensity of the CMB radiation at a given temperature
+      function calculateIntensity(temperature) {
+        const numerator = 2 * h * Math.pow(frequency * Math.pow(10, 9), 3);
+        const denominator = Math.pow(c, 2) * Math.pow(wavelength * Math.pow(10, -3), 4);
+        return numerator / denominator * 1 / (Math.exp(h * frequency * Math.pow(10, 9) / (k * temperature)) - 1);
+      }
+
+      // Define a function to map temperature values to RGB color values
+      function mapTemperatureToColor(temperature) {
+        console.log(temperature);
+        // Map the temperature to a color
+        const hue = temperature / 10 *240;
+        return `hsl(${hue}, 100%, 50%)`;
+      }
+
+      // Define a function to render the CMB radiation on the canvas
+      function render() {
+        // Loop through every pixel on the canvas
+        for (let x = 0; x < canvas.width; x++) {
+          for (let y = 0; y < canvas.height; y++) {
+            // Calculate the temperature of the CMB radiation at this point
+            const distanceFromCenter = Math.sqrt(Math.pow(x - canvas.width / 2, 2) + Math.pow(y - canvas.height / 2, 2));
+            const temperatureAtPoint = temperature * (1 + 0.0002 * distanceFromCenter);
+
+            // Map the temperature to a color and draw a pixel on the canvas
+            context.fillStyle = mapTemperatureToColor(temperatureAtPoint);
+            context.fillRect(x, y, 1, 1);
+          }
+        }
+      }
+
+      // Render the CMB radiation on the canvas
+      render();
+
+      // Re-render the CMB radiation when the window is resized
+      window.addEventListener("resize", function () {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        render();
+      });
+    </script>
+  </body>
+</html>

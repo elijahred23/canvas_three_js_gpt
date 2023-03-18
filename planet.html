@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML Canvas Gravity Orbits of Many Planets</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define gravitational constants and planet parameters
+		var G = 0.1;
+		var dt = 0.1;
+		var numPlanets = 5;
+
+		var planets = [];
+
+		for (var i = 0; i < numPlanets; i++) {
+			var planet = {
+				mass: Math.random() * 5 + 1,
+				x: Math.random() * canvas.width,
+				y: Math.random() * canvas.height,
+				vx: Math.random() * 2 - 1,
+				vy: Math.random() * 2 - 1,
+				color: "rgb(" + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + ")"
+			};
+
+			planets.push(planet);
+		}
+
+		// calculate gravitational force
+		function calcGravity(p1, p2) {
+			var dx = p2.x - p1.x;
+			var dy = p2.y - p1.y;
+			var distance = Math.sqrt(dx * dx + dy * dy);
+
+			if (distance === 0) {
+				return { x: 0, y: 0 };
+			}
+
+			var force = G * p1.mass * p2.mass / (distance * distance);
+
+			return { x: force * dx / distance, y: force * dy / distance };
+		}
+
+		// update planet velocities and positions based on gravitational force
+		function updatePlanets() {
+			for (var i = 0; i < planets.length; i++) {
+				var planet1 = planets[i];
+				var forceX = 0;
+				var forceY = 0;
+
+				for (var j = 0; j < planets.length; j++) {
+					if (i === j) {
+						continue;
+					}
+
+					var planet2 = planets[j];
+					var gravity = calcGravity(planet1, planet2);
+
+					forceX += gravity.x;
+					forceY += gravity.y;
+				}
+
+				planet1.vx += forceX / planet1.mass * dt;
+				planet1.vy += forceY / planet1.mass * dt;
+
+				planet1.x += planet1.vx * dt;
+				planet1.y += planet1.vy * dt;
+			}
+		}
+
+		// draw planets
+		function drawPlanets() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			for (var i = 0; i < planets.length; i++) {
+				var planet = planets[i];
+
+				ctx.beginPath();
+				ctx.arc(planet.x, planet.y, planet.mass * 2, 0, Math.PI * 2);
+				ctx.fillStyle = planet.color;
+				ctx.fill();
+			}
+		}
+
+		// animate planets
+		function animate() {
+			requestAnimationFrame(animate);
+			updatePlanets();
+			drawPlanets();
+		}
+
+		animate();
+	</script>
+</body>
+</html>

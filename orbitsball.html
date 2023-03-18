@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Eight Balls Orbiting Big Yellow Ball</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script>
+        // Create the scene, camera, and renderer
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create the yellow sphere
+        var yellowSphereGeometry = new THREE.SphereGeometry(50, 32, 32);
+        var yellowSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        var yellowSphere = new THREE.Mesh(yellowSphereGeometry, yellowSphereMaterial);
+        scene.add(yellowSphere);
+
+        // Create the eight smaller spheres
+        var sphereRadius = [10, 20, 30, 40, 50, 60, 70, 80];
+        var spherePositions = [
+            new THREE.Vector3(100, 0, 0),
+            new THREE.Vector3(0, 100, 0),
+            new THREE.Vector3(-100, 0, 0),
+            new THREE.Vector3(0, -100, 0),
+            new THREE.Vector3(70, 70, 0),
+            new THREE.Vector3(-70, 70, 0),
+            new THREE.Vector3(-70, -70, 0),
+            new THREE.Vector3(70, -70, 0)
+        ];
+        var spheres = [];
+        for (var i = 0; i < 8; i++) {
+            var sphereGeometry = new THREE.SphereGeometry(sphereRadius[i], 32, 32);
+            var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.position.copy(spherePositions[i]);
+            var velocity = new THREE.Vector3(0, 0, 0);
+            velocity.add(spherePositions[i].clone().cross(new THREE.Vector3(0, 0, 1)).normalize().multiplyScalar(0.01));
+            sphere.velocity = velocity;
+            spheres.push(sphere);
+            scene.add(sphere);
+        }
+
+        // Render loop
+        function render() {
+            requestAnimationFrame(render);
+            for (var i = 0; i < 8; i++) {
+                spheres[i].position.add(spheres[i].velocity);
+            }
+            renderer.render(scene, camera);
+        }
+        render();
+
+    </script>
+</body>
+
+</html>

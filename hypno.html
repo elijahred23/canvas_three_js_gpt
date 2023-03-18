@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML Canvas Hypnosis Animation</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define hypnosis parameters
+		var centerX = canvas.width / 2;
+		var centerY = canvas.height / 2;
+		var numCircles = 20;
+		var maxRadius = 250;
+		var minRadius = 50;
+		var rotationSpeed = .85;
+		var rotationAngle = 0;
+
+		// draw hypnosis animation
+		function drawHypnosis() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// draw circles
+			for (var i = 0; i < numCircles; i++) {
+				var radius = minRadius + (maxRadius - minRadius) * (i / numCircles);
+				var angle = i * Math.PI * 2 / numCircles + rotationAngle;
+
+				// create gradient color
+				var gradient = ctx.createRadialGradient(centerX, centerY, radius / 2, centerX, centerY, radius);
+				gradient.addColorStop(0, "white");
+				gradient.addColorStop(1, "black");
+
+				ctx.beginPath();
+				ctx.arc(centerX + radius * Math.cos(angle), centerY + radius * Math.sin(angle), 10, 0, Math.PI * 2, false);
+				ctx.fillStyle = gradient;
+				ctx.fill();
+				ctx.closePath();
+			}
+
+			// update rotation angle
+			rotationAngle += rotationSpeed;
+
+			// wrap rotation angle around full circle
+			if (rotationAngle >= Math.PI * 2) {
+				rotationAngle -= Math.PI * 2;
+			}
+		}
+
+		// animate hypnosis rotation
+		function animate() {
+			requestAnimationFrame(animate);
+			drawHypnosis();
+		}
+
+		animate();
+	</script>
+</body>
+</html>

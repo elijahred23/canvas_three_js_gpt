@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Galaxies in an Expanding Universe</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// create array to hold galaxies
+		var galaxies = [];
+
+		// create galaxies
+		for (var i = 0; i < 50; i++) {
+			galaxies.push({
+				x: Math.random() * canvas.width,
+				y: Math.random() * canvas.height,
+				dx: Math.random() * 2 - 1,
+				dy: Math.random() * 2 - 1,
+				radius: Math.random() * 5 + 5,
+				color: "#ffffff"
+			});
+		}
+
+		// animate canvas
+		function animate() {
+			requestAnimationFrame(animate);
+
+			// clear canvas
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// update galaxy positions
+			for (var i = 0; i < galaxies.length; i++) {
+				var galaxy = galaxies[i];
+
+				// update position based on velocity
+				galaxy.x += galaxy.dx;
+				galaxy.y += galaxy.dy;
+
+				// wrap position around edges of canvas
+				if (galaxy.x < 0) {
+					galaxy.x = canvas.width;
+				}
+				if (galaxy.x > canvas.width) {
+					galaxy.x = 0;
+				}
+				if (galaxy.y < 0) {
+					galaxy.y = canvas.height;
+				}
+				if (galaxy.y > canvas.height) {
+					galaxy.y = 0;
+				}
+
+				// draw galaxy
+				ctx.beginPath();
+				ctx.arc(galaxy.x, galaxy.y, galaxy.radius, 0, Math.PI * 2, false);
+				ctx.fillStyle = galaxy.color;
+				ctx.fill();
+				ctx.closePath();
+			}
+		}
+
+		// simulate expansion of universe
+		var scale = 1;
+
+		setInterval(function() {
+			scale *= 1.001;
+
+			for (var i = 0; i < galaxies.length; i++) {
+				galaxies[i].x *= 1.001;
+				galaxies[i].y *= 1.001;
+				galaxies[i].radius *= 1.001;
+			}
+		}, 10);
+
+		// start animation
+		animate();
+	</script>
+</body>
+</html>

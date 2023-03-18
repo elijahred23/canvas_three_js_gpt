@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML Canvas Optical Illusion of a Rotating Snake</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define illusion parameters
+		var centerX = canvas.width / 2;
+		var centerY = canvas.height / 2;
+		var snakeWidth = 400;
+		var snakeHeight = 400;
+
+		// create rotating snake image
+		var snakeImage = new Image();
+		snakeImage.src = "https://i.imgur.com/zumDpFr.png";
+
+		// draw rotating snake illusion
+		function drawSnake() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// rotate and draw image
+			ctx.save();
+			ctx.translate(centerX, centerY);
+			ctx.rotate(Date.now() / 1000);
+			ctx.drawImage(snakeImage, -snakeWidth / 2, -snakeHeight / 2, snakeWidth, snakeHeight);
+			ctx.restore();
+
+			// draw instructions
+			ctx.font = "20px Arial";
+			ctx.fillStyle = "#000000";
+			ctx.fillText("Stare at the center of the image and see the snake move!", 50, 50);
+		}
+
+		// animate illusion rotation
+		function animate() {
+			requestAnimationFrame(animate);
+			drawSnake();
+		}
+
+		animate();
+	</script>
+</body>
+</html>

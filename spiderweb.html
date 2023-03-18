@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Spider Web</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// set spider web parameters
+		var centerX = canvas.width / 2;
+		var centerY = canvas.height / 2;
+
+		var numRings = 10;
+		var ringRadius = 50;
+
+		var minAngle = 0;
+		var maxAngle = Math.PI * 2;
+		var angleIncrement = Math.PI / 6;
+
+		var innerColor = "#1d1d1d";
+		var outerColor = "#4c4c4c";
+
+		// set mouse interaction variables
+		var mouse = {
+			x: centerX,
+			y: centerY
+		};
+
+		canvas.addEventListener("mousemove", function(event) {
+			mouse.x = event.clientX - canvas.offsetLeft;
+			mouse.y = event.clientY - canvas.offsetTop;
+		});
+
+		// draw spider web
+		function drawSpiderWeb() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			for (var i = 0; i < numRings; i++) {
+				var radius = (i + 1) * ringRadius;
+
+				var gradient = ctx.createRadialGradient(centerX, centerY, radius / 2, centerX, centerY, radius);
+				gradient.addColorStop(0, innerColor);
+				gradient.addColorStop(1, outerColor);
+				ctx.fillStyle = gradient;
+
+				ctx.beginPath();
+
+				for (var angle = minAngle; angle < maxAngle; angle += angleIncrement) {
+					var x = centerX + radius * Math.cos(angle);
+					var y = centerY + radius * Math.sin(angle);
+
+					if (angle == minAngle) {
+						ctx.moveTo(x, y);
+					} else {
+						ctx.lineTo(x, y);
+					}
+				}
+
+				ctx.closePath();
+				ctx.fill();
+				ctx.stroke();
+			}
+
+			// draw spider web anchor point
+			ctx.beginPath();
+			ctx.arc(centerX, centerY, 5, 0, Math.PI * 2, false);
+			ctx.fillStyle = "#ffffff";
+			ctx.fill();
+			ctx.closePath();
+
+			// draw line from anchor point to mouse position
+			ctx.beginPath();
+			ctx.moveTo(centerX, centerY);
+			ctx.lineTo(mouse.x, mouse.y);
+			ctx.strokeStyle = "#ffffff";
+			ctx.stroke();
+			ctx.closePath();
+		}
+
+		// animate spider web
+		function animate() {
+			requestAnimationFrame(animate);
+			drawSpiderWeb();
+		}
+
+		animate();
+	</script>
+</body>
+</html>

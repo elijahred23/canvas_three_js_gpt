@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML Canvas 3D Spinning Ball</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define ball parameters
+		var ballX = canvas.width / 2;
+		var ballY = canvas.height / 2;
+		var ballRadius = 50;
+		var ballAngleX = 0;
+		var ballAngleY = 0;
+
+		// draw ball
+		function drawBall() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// calculate rotation matrix
+			var sinX = Math.sin(ballAngleX);
+			var cosX = Math.cos(ballAngleX);
+			var sinY = Math.sin(ballAngleY);
+			var cosY = Math.cos(ballAngleY);
+
+			var rotationMatrix = [
+				[cosY, 0, sinY],
+				[sinX * sinY, cosX, -sinX * cosY],
+				[-cosX * sinY, sinX, cosX * cosY]
+			];
+
+			// transform ball and project onto 2D screen
+			var projectedBall = [];
+
+			for (var i = 0; i <= 360; i += 10) {
+				var ballXOffset = Math.cos(i * Math.PI / 180) * ballRadius;
+				var ballYOffset = Math.sin(i * Math.PI / 180) * ballRadius;
+				var ballZOffset = 0;
+
+				// apply rotation matrix to ball
+				var transformedBall = [
+					ballXOffset * rotationMatrix[0][0] + ballYOffset * rotationMatrix[0][1] + ballZOffset * rotationMatrix[0][2],
+					ballXOffset * rotationMatrix[1][0] + ballYOffset * rotationMatrix[1][1] + ballZOffset * rotationMatrix[1][2],
+					ballXOffset * rotationMatrix[2][0] + ballYOffset * rotationMatrix[2][1] + ballZOffset * rotationMatrix[2][2]
+				];
+
+				// project ball onto 2D screen
+				var projectedBallX = canvas.width / 2 + transformedBall[0];
+				var projectedBallY = canvas.height / 2 + transformedBall[1];
+
+				projectedBall.push([projectedBallX, projectedBallY]);
+			}
+
+			// draw ball
+			ctx.beginPath();
+
+			for (var i = 0; i < projectedBall.length; i++) {
+				var projectedBallX = projectedBall[i][0];
+				var projectedBallY = projectedBall[i][1];
+
+				if (i === 0) {
+					ctx.moveTo(projectedBallX, projectedBallY);
+				} else {
+					ctx.lineTo(projectedBallX, projectedBallY);
+				}
+			}
+
+			ctx.fillStyle = "blue";
+			ctx.fill();
+			ctx.closePath();
+
+			// update ball angles
+			ballAngleX += 0.01;
+			ballAngleY += 0.02;
+		}
+
+		// animate ball
+		function animate() {
+			requestAnimationFrame(animate);
+			drawBall();
+		}
+
+		animate();
+	</script>
+</body

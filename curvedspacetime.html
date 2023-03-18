@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Curved Space-Time Visualization</title>
+	<style>
+		canvas {
+			display: block;
+			margin: auto;
+			border: 1px solid black;
+			border-radius: 10px;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define canvas dimensions and center point
+		var canvasWidth = canvas.width = window.innerWidth;
+		var canvasHeight = canvas.height = window.innerHeight;
+		var centerX = canvasWidth / 2;
+		var centerY = canvasHeight / 2;
+
+		// define time and space dimensions
+		var tMin = -5;
+		var tMax = 5;
+		var xMin = -5;
+		var xMax = 5;
+
+		// define scaling factors for space and time dimensions
+		var xScale = canvasWidth / (xMax - xMin);
+		var tScale = canvasHeight / (tMax - tMin);
+
+		// define function to convert time and space coordinates to canvas coordinates
+		function toCanvasCoords(t, x) {
+			var canvasX = (x - xMin) * xScale;
+			var canvasY = canvasHeight - (t - tMin) * tScale;
+
+			return [canvasX, canvasY];
+		}
+
+		// define function to calculate curvature
+		function calcCurvature(x, t) {
+			return Math.sin(x * t) / (x * t);
+		}
+
+		// draw gridlines for time and space dimensions
+		function drawGridlines() {
+			ctx.strokeStyle = "rgba(200, 200, 200, 0.5)";
+			ctx.lineWidth = 1;
+
+			// draw horizontal gridlines for time
+			for (var t = tMin; t <= tMax; t += 1) {
+				var coords = toCanvasCoords(t, 0);
+				ctx.beginPath();
+				ctx.moveTo(0, coords[1]);
+				ctx.lineTo(canvasWidth, coords[1]);
+				ctx.stroke();
+			}
+
+			// draw vertical gridlines for space
+			for (var x = xMin; x <= xMax; x += 1) {
+				var coords = toCanvasCoords(0, x);
+				ctx.beginPath();
+				ctx.moveTo(coords[0], 0);
+				ctx.lineTo(coords[0], canvasHeight);
+				ctx.stroke();
+			}
+		}
+
+		// draw curved space-time visualization
+		function drawVisualization() {
+			var curvatureThreshold = 0.5;
+
+			for (var t = tMin; t <= tMax; t += 0.1) {
+				for (var x = xMin; x <= xMax; x += 0.1) {
+					var curvature = calcCurvature(x, t);
+
+					if (curvature > curvatureThreshold) {
+						ctx.fillStyle = "red";
+					} else if (curvature < -curvatureThreshold) {
+						ctx.fillStyle = "blue";
+					} else {
+						ctx.fillStyle = "green";
+					}
+
+					var coords = toCanvasCoords(t, x);
+					ctx.fillRect(coords[0], coords[1], 1, 1);
+				}
+			}
+		}
+
+		// draw gridlines and curved space-time visualization
+		function draw() {
+			drawGridlines();
+			drawVisualization();
+		}
+
+		draw();
+	</script>
+    </body>
+
+    </html>

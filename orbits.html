@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML Canvas Solar System Simulation</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define solar system parameters
+		var sunX = canvas.width / 2;
+		var sunY = canvas.height / 2;
+		var sunRadius = 50;
+		var blackHoleX = canvas.width / 2 + 200;
+		var blackHoleY = canvas.height / 2;
+		var blackHoleRadius = 20;
+		var earthX = sunX + 200;
+		var earthY = sunY;
+		var earthRadius = 10;
+		var earthDistance = 200;
+		var earthAngle = 0;
+		var earthSpeed = 0.01;
+		var moonX = earthX + 50;
+		var moonY = earthY;
+		var moonRadius = 5;
+		var moonDistance = 50;
+		var moonAngle = 0;
+		var moonSpeed = 0.02;
+
+		// draw solar system animation
+		function drawSolarSystem() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// draw black hole
+			ctx.beginPath();
+			ctx.arc(blackHoleX, blackHoleY, blackHoleRadius, 0, Math.PI * 2, false);
+			ctx.fillStyle = "black";
+			ctx.fill();
+			ctx.closePath();
+
+			// draw sun
+			ctx.beginPath();
+			ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2, false);
+			ctx.fillStyle = "yellow";
+			ctx.fill();
+			ctx.closePath();
+
+			// draw earth
+			ctx.beginPath();
+			ctx.arc(earthX, earthY, earthRadius, 0, Math.PI * 2, false);
+			ctx.fillStyle = "blue";
+			ctx.fill();
+			ctx.closePath();
+
+			// draw moon
+			ctx.beginPath();
+			ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2, false);
+			ctx.fillStyle = "gray";
+			ctx.fill();
+			ctx.closePath();
+
+			// update earth position
+			earthAngle += earthSpeed;
+			earthX = sunX + earthDistance * Math.cos(earthAngle);
+			earthY = sunY + earthDistance * Math.sin(earthAngle);
+
+			// update moon position
+			moonAngle += moonSpeed;
+			moonX = earthX + moonDistance * Math.cos(moonAngle);
+			moonY = earthY + moonDistance * Math.sin(moonAngle);
+		}
+
+		// animate solar system orbits
+		function animate() {
+			requestAnimationFrame(animate);
+			drawSolarSystem();
+		}
+
+		animate();
+	</script>
+</body>
+</html>

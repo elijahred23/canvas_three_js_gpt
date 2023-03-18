@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Geodesic Path of the Earth around the Sun</title>
+	<style>
+		canvas {
+			display: block;
+			margin: auto;
+			border: 1px solid black;
+			border-radius: 10px;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define gravitational constant and Earth and Sun parameters
+		var G = 6.674 * Math.pow(10, -11);
+		var earthRadius = 10;
+		var sunRadius = 70;
+		var earthDistance = 200;
+		var earthAngle = 0;
+
+		// define geodesic parameters
+		var numPoints = 200;
+		var geodesicRadius = earthDistance;
+		var geodesicPoints = [];
+
+		for (var i = 0; i < numPoints; i++) {
+			var theta = i * Math.PI / (numPoints - 1) - Math.PI / 2;
+			var phi = Math.atan(2 / Math.sqrt(5) * Math.sin(theta));
+
+			var geodesicX = canvas.width / 2 + geodesicRadius * Math.sin(theta) * Math.cos(phi);
+			var geodesicY = canvas.height / 2 + geodesicRadius * Math.sin(theta) * Math.sin(phi);
+			var geodesicZ = sunRadius * Math.cos(theta);
+
+			geodesicPoints.push([geodesicX, geodesicY, geodesicZ]);
+		}
+
+		// calculate gravitational force
+		function calcGravity(p1, p2) {
+			var dx = p2.x - p1.x;
+			var dy = p2.y - p1.y;
+			var distance = Math.sqrt(dx * dx + dy * dy);
+
+			if (distance === 0) {
+				return { x: 0, y: 0 };
+			}
+
+			var force = G * p1.mass * p2.mass / (distance * distance);
+
+			return { x: force * dx / distance, y: force * dy / distance };
+		}
+
+		// update Earth angle based on time
+		function updateEarth() {
+			var orbitTime = 5000;
+			earthAngle += 2 * Math.PI / orbitTime * Date.now() % orbitTime;
+		}
+
+		// draw Earth and Sun
+		function drawPlanets() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			ctx.beginPath();
+			ctx.arc(canvas.width / 2, canvas.height / 2, sunRadius, 0, Math.PI * 2);
+			var sunGradient = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, sunRadius / 4, canvas.width / 2, canvas.height / 2, sunRadius);
+			sunGradient.addColorStop(0, "rgba(255, 255, 0, 1)");
+			sunGradient.addColorStop(1, "rgba(255, 255, 0, 0)");
+			ctx.fillStyle = sunGradient;
+			ctx.fill();
+
+			var earthX = canvas.width / 2 + earthDistance * Math.sin(earthAngle);
+			var earthY = canvas.height / 2 + earthDistance * Math.cos(earthAngle);
+
+			ctx.beginPath();
+			ctx.arc(earthX, earthY, earthRadius, 0, Math.PI * 2);
+			var earthGradient = ctx.createRadialGradient(earthX, earthY, earthRadius / 4, earthX, earthY, earthRadius);
+			earthGradient.addColorStop(0, "rgba(0, 0, 255, 1)");
+			earthGradient.addColorStop(1, "rgba(0, 0, 255, 0)");
+			ctx.fillStyle = earthGradient;
+			ctx.fill();
+		}
+
+		// draw geodesic path
+		function drawGeodesic() {
+			ctx.beginPath();
+
+			for (var i = 0; i < geodesicPoints.length; i++) {
+				var point = geodesicPoints[i];
+				var x = point[0];
+				var y = point[1];
+
+				if (i === 0) {
+					ctx.moveTo(x, y);
+				} else {
+					ctx.lineTo(x, y);
+				}
+			}
+
+			var gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, sunRadius / 2, canvas.width / 2, canvas.height / 2, sunRadius);
+			gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
+			gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+			ctx.strokeStyle = gradient;
+			ctx.lineWidth = 2;
+			ctx.stroke();
+		}
+
+		// animate geodesic path
+		function animate() {
+			requestAnimationFrame(animate);
+			updateEarth();
+			drawPlanets();
+			drawGeodesic();
+		}
+
+		animate();
+	</script>
+</body>
+</html>

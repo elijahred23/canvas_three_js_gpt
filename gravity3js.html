@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+
+// Set up the scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Add a light source
+const pointLight = new THREE.PointLight(0xffffff);
+pointLight.position.set(0, 0, 20);
+scene.add(pointLight);
+
+// Create a function to generate a sphere
+function createSphere(radius, segments, material) {
+  const geometry = new THREE.SphereGeometry(radius, segments, segments);
+  const sphere = new THREE.Mesh(geometry, material);
+  scene.add(sphere);
+  return sphere;
+}
+
+// Create random colors for spheres
+function getRandomColor() {
+  return new THREE.Color(Math.random(), Math.random(), Math.random());
+}
+
+// Create an array of balls
+const balls = [];
+const numBalls = 5;
+
+// Create balls with random colors and random initial positions and velocities
+for (let i = 0; i < numBalls; i++) {
+  const ballMaterial = new THREE.MeshLambertMaterial({ color: getRandomColor() });
+  const ball = createSphere(0.5, 32, ballMaterial);
+  ball.position.set(
+    (Math.random() - 0.5) * 20,
+    (Math.random() - 0.5) * 20,
+    (Math.random() - 0.5) * 20
+  );
+  ball.velocity = new THREE.Vector3(
+    (Math.random() - 0.5) * 0.1,
+    (Math.random() - 0.5) * 0.1,
+    (Math.random() - 0.5) * 0.1
+  );
+  ball.mass = 1; // Set mass for all balls to 1 for simplicity
+  balls.push(ball);
+}
+
+camera.position.z = 50;
+
+// Calculate gravitational force between two balls
+function calculateForce(ball1, ball2) {
+  const G = 0.1; // Gravitational constant (scaled for simplicity)
+  const distanceVector = new THREE.Vector3().subVectors(ball2.position, ball1.position);
+  const distanceSquared = distanceVector.lengthSq();
+  const forceMagnitude = (G * ball1.mass * ball2.mass) / distanceSquared;
+  return distanceVector.normalize().multiplyScalar(forceMagnitude);
+}
+
+// Animation loop
+function animate() {
+  requestAnimationFrame(animate);
+
+  // Update ball positions and velocities
+  const dt = 0.01; // Time step
+
+  // Calculate forces between balls
+  for (let i = 0; i < numBalls; i++) {
+    for (let j = i + 1; j < numBalls; j++) {
+      const force = calculateForce(balls[i], balls[j]);
+      balls[i].velocity.addScaledVector(force, dt / balls[i].mass);
+      balls[j].velocity.subScaledVector(force, dt / balls[j].mass);
+    }
+  }
+
+  // Update positions based on velocitiesl
+  for (let i = 0; i < numBalls; i++) {
+    balls[i].position.addScaledVector(balls[i].velocity, dt);
+  }
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+
+    </script>
+</body>
+
+</html>

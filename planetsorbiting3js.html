@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Three.js Planets Orbiting the Sun</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+// Set up the scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Add a light source
+const pointLight = new THREE.PointLight(0xffffff);
+pointLight.position.set(0, 0, 0);
+scene.add(pointLight);
+
+// Create a function to generate a sphere (planet or sun)
+function createSphere(radius, segments, material) {
+  const geometry = new THREE.SphereGeometry(radius, segments, segments);
+  const sphere = new THREE.Mesh(geometry, material);
+  scene.add(sphere);
+  return sphere;
+}
+
+// Create the sun
+const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffdd00 });
+const sun = createSphere(2, 32, sunMaterial);
+
+// Create the planets
+const planet1Material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+const planet2Material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+const planet3Material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+
+const planet1 = createSphere(0.5, 32, planet1Material);
+const planet2 = createSphere(0.4, 32, planet2Material);
+const planet3 = createSphere(0.3, 32, planet3Material);
+
+// Set initial positions of the planets
+planet1.position.set(4, 0, 0);
+planet2.position.set(8, 0, 0);
+planet3.position.set(12, 0, 0);
+
+camera.position.z = 20;
+
+// Animation loop
+function animate() {
+  requestAnimationFrame(animate);
+
+  // Update planet positions
+  planet1.position.x = 4 * Math.cos(Date.now() * 0.001);
+  planet1.position.z = 4 * Math.sin(Date.now() * 0.001);
+
+  planet2.position.x = 8 * Math.cos(Date.now() * 0.0005);
+  planet2.position.z = 8 * Math.sin(Date.now() * 0.0005);
+
+  planet3.position.x = 12 * Math.cos(Date.now() * 0.0003);
+  planet3.position.z = 12 * Math.sin(Date.now() * 0.0003);
+
+  // Update camera position
+  const radius = 30;
+  const cameraSpeed = 0.002;
+  camera.position.x = radius * Math.sin(Date.now() * cameraSpeed);
+  camera.position.z = radius * Math.cos(Date.now() * cameraSpeed);
+  camera.lookAt(sun.position);
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+        
+    </script>
+  </body>
+</html>

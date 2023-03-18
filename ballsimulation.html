@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ball Simulation</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+        width:100%;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const numBalls = 1400;
+      const balls = [];
+
+      function init() {
+        for (let i = 0; i < numBalls; i++) {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * canvas.height;
+          const radius = Math.random() * 3;
+          const velocity = Math.random() * 100 + 50;
+          balls.push({ x, y, radius, velocity });
+        }
+      }
+
+      function draw() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < numBalls; i++) {
+          const ball = balls[i];
+          context.beginPath();
+          context.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI);
+          context.fillStyle = "white";
+          context.fill();
+          context.strokeStyle = "black";
+          context.stroke();
+          const distance = Math.sqrt(
+            (ball.x - centerX) * (ball.x - centerX) +
+              (ball.y - centerY) * (ball.y - centerY)
+          );
+          ball.x -= (ball.x - centerX) / distance * ball.velocity / 100;
+          ball.y -= (ball.y - centerY) / distance * ball.velocity / 100;
+        }
+        requestAnimationFrame(draw);
+      }
+
+      init();
+      draw();
+    </script>
+  </body>
+</html>

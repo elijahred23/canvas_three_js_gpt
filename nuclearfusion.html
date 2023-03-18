@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Nuclear Fusion Canvas</title>
+</head>
+<body>
+	<canvas id="fusion-canvas">
+        
+    </canvas>
+	<script >
+const canvas = document.getElementById('fusion-canvas');
+const ctx = canvas.getContext('2d');
+
+// Set up the canvas dimensions and styling
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+ctx.fillStyle = 'black';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+// Define the properties of the atomic nuclei
+const nucleus1 = {
+	x: canvas.width / 2 - 50,
+	y: canvas.height / 2,
+	radius: 20,
+	color: 'red',
+	charge: 1
+};
+const nucleus2 = {
+	x: canvas.width / 2 + 50,
+	y: canvas.height / 2,
+	radius: 20,
+	color: 'red',
+	charge: 1
+};
+
+// Define the properties of the energy released by the fusion reaction
+const energy = {
+	color: 'yellow',
+	width: 5,
+	speed: 5
+};
+
+// Draw the initial state of the simulation
+function drawInitialState() {
+	// Draw the two atomic nuclei
+	ctx.fillStyle = nucleus1.color;
+	ctx.beginPath();
+	ctx.arc(nucleus1.x, nucleus1.y, nucleus1.radius, 0, Math.PI * 2);
+	ctx.fill();
+	
+	ctx.fillStyle = nucleus2.color;
+	ctx.beginPath();
+	ctx.arc(nucleus2.x, nucleus2.y, nucleus2.radius, 0, Math.PI * 2);
+	ctx.fill();
+
+	// Draw the energy released by the fusion reaction
+	ctx.strokeStyle = energy.color;
+	ctx.lineWidth = energy.width;
+	ctx.beginPath();
+	ctx.moveTo(nucleus1.x, nucleus1.y);
+	ctx.lineTo(nucleus2.x, nucleus2.y);
+	ctx.stroke();
+}
+
+// Define a function to update the simulation
+function updateSimulation() {
+	// Move the atomic nuclei towards each other
+	if (nucleus1.x < nucleus2.x) {
+		nucleus1.x += 1;
+	} else {
+		nucleus1.x -= 1;
+	}
+	if (nucleus1.y < nucleus2.y) {
+		nucleus1.y += 1;
+	} else {
+		nucleus1.y -= 1;
+	}
+	if (nucleus2.y > nucleus1.y) {
+		nucleus2.y -= 1;
+	} else {
+		nucleus2.y += 1;
+	}
+
+	// Check if the atomic nuclei have collided
+	if (Math.abs(nucleus1.x - nucleus2.x) < nucleus1.radius + nucleus2.radius &&
+		Math.abs(nucleus1.y - nucleus2.y) < nucleus1.radius + nucleus2.radius) {
+		// Calculate the resulting nucleus properties
+		const mass = nucleus1.charge + nucleus2.charge;
+		const color = 'rgb(' + Math.floor(Math.random() * 256) + ',' +
+			Math.floor(Math.random() * 256) + ',' + Math.floor(Math.random() * 256) + ')';
+		const radius = Math.pow(mass, 1 / 3) * nucleus1.radius;
+		
+		// Update the properties of the resulting nucleus and energy
+		nucleus1.x = canvas.width / 2 - radius / 2;
+		nucleus1.y = canvas.height / 2 - 		radius / 2;
+		nucleus1.radius = radius;
+		nucleus1.color = color;
+		nucleus1.charge = mass;
+		nucleus2.radius = 0;
+		energy.width = 20;
+		energy.speed = 10;
+	}
+
+	// Clear the canvas and redraw the simulation
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = 'black';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	drawInitialState();
+
+	// Draw the energy released by the fusion reaction
+	ctx.strokeStyle = energy.color;
+	ctx.lineWidth = energy.width;
+	ctx.beginPath();
+	ctx.moveTo(nucleus1.x, nucleus1.y);
+	ctx.lineTo(nucleus2.x, nucleus2.y);
+	ctx.stroke();
+
+	// Update the energy width and position
+	if (energy.width > 0) {
+		energy.width -= 0.2 * energy.speed;
+	}
+	energy.x = (nucleus1.x + nucleus2.x) / 2;
+	energy.y = (nucleus1.y + nucleus2.y) / 2;
+
+	// Draw the energy released by the fusion reaction
+	ctx.beginPath();
+	ctx.moveTo(energy.x - energy.width / 2, energy.y);
+	ctx.lineTo(energy.x + energy.width / 2, energy.y);
+	ctx.stroke();
+}
+
+// Call the drawInitialState function to start the simulation
+drawInitialState();
+
+// Call the updateSimulation function every 10 milliseconds
+setInterval(updateSimulation, 10);
+
+    </script>
+</body>
+</html>

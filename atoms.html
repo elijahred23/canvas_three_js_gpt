@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML Canvas Atom Simulation</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define atom parameters
+		var nucleusX = canvas.width / 2;
+		var nucleusY = canvas.height / 2;
+		var nucleusRadius = 50;
+		var protonRadius = 10;
+		var neutronRadius = 15;
+		var electronRadius = 5;
+		var electronDistance = 100;
+		var numProtons = 6;
+		var numNeutrons = 8;
+		var numElectrons = 12;
+		var electronSpeed = 0.03;
+
+		// define particle colors
+		var protonColor = "red";
+		var neutronColor = "gray";
+		var electronColor = "blue";
+
+		// define particles
+		var protons = [];
+		var neutrons = [];
+		var electrons = [];
+
+		for (var i = 0; i < numProtons; i++) {
+			var proton = {
+				x: nucleusX + (i - numProtons / 2) * protonRadius * 2,
+				y: nucleusY,
+				radius: protonRadius,
+				color: protonColor,
+				mass: 1,
+				charge: 1
+			};
+
+			protons.push(proton);
+		}
+
+		for (var i = 0; i < numNeutrons; i++) {
+			var neutron = {
+				x: nucleusX + (i - numNeutrons / 2) * neutronRadius * 2,
+				y: nucleusY + neutronRadius * 2,
+				radius: neutronRadius,
+				color: neutronColor,
+				mass: 1,
+				charge: 0
+			};
+
+			neutrons.push(neutron);
+		}
+
+		for (var i = 0; i < numElectrons; i++) {
+			var electron = {
+				angle: 2 * Math.PI / numElectrons * i,
+				speed: electronSpeed,
+				color: electronColor,
+				distance: electronDistance,
+				radius: electronRadius
+			};
+
+			electrons.push(electron);
+		}
+
+		// draw atom animation
+		function drawAtom() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// draw nucleus
+			ctx.beginPath();
+			ctx.arc(nucleusX, nucleusY, nucleusRadius, 0, Math.PI * 2, false);
+			ctx.fillStyle = "black";
+			ctx.fill();
+			ctx.closePath();
+
+			// draw protons
+			for (var i = 0; i < numProtons; i++) {
+				var proton = protons[i];
+
+				ctx.beginPath();
+				ctx.arc(proton.x, proton.y, proton.radius, 0, Math.PI * 2, false);
+				ctx.fillStyle = proton.color;
+				ctx.fill();
+				ctx.closePath();
+			}
+
+			// draw neutrons
+			for (var i = 0; i < numNeutrons; i++) {
+				var neutron = neutrons[i];
+
+				ctx.beginPath();
+				ctx.arc(neutron.x, neutron.y, neutron.radius,0,2*Math.PI, 3);
+                ctx.fillStyle = neutron.color;
+				ctx.fill();
+				ctx.closePath();
+			}
+
+			// draw electron
+			var electron = electrons[0];
+			var electronX = nucleusX + electron.distance * Math.cos(electron.angle);
+			var electronY = nucleusY + electron.distance * Math.sin(electron.angle);
+
+			ctx.beginPath();
+			ctx.arc(electronX, electronY, electron.radius, 0, Math.PI * 2, false);
+			ctx.fillStyle = electron.color;
+			ctx.fill();
+			ctx.closePath();
+
+			// update electron position
+			electron.angle += electron.speed;
+			if (electron.angle > Math.PI * 2) {
+				electron.angle -= Math.PI * 2;
+			}
+		}
+
+		// animate atom
+		function animate() {
+			requestAnimationFrame(animate);
+			drawAtom();
+		}
+
+		animate();
+	</script>
+</body>
+</html>
+

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML Canvas Gravity Simulation</title>
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script>
+		// get canvas element
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// define ball parameters
+		var ball1 = {
+			x: 100,
+			y: canvas.height / 2,
+			radius: 50,
+			color: "blue",
+			mass: 10000,
+			velocity: {
+				x: 0,
+				y: 0
+			}
+		};
+
+		var ball2 = {
+			x: canvas.width - 100,
+			y: canvas.height / 2,
+			radius: 30,
+			color: "red",
+			mass: 2,
+			velocity: {
+				x: 0,
+				y: 0
+			}
+		};
+
+		// draw balls
+		function drawBalls() {
+			ctx.beginPath();
+			ctx.arc(ball1.x, ball1.y, ball1.radius, 0, Math.PI * 2, false);
+			ctx.fillStyle = ball1.color;
+			ctx.fill();
+			ctx.closePath();
+
+			ctx.beginPath();
+			ctx.arc(ball2.x, ball2.y, ball2.radius, 0, Math.PI * 2, false);
+			ctx.fillStyle = ball2.color;
+			ctx.fill();
+			ctx.closePath();
+		}
+
+		// update ball positions
+		function updateBalls() {
+			// calculate distance between balls
+			var dx = ball2.x - ball1.x;
+			var dy = ball2.y - ball1.y;
+			var distance = Math.sqrt(dx * dx + dy * dy);
+
+			// calculate gravitational force between balls
+			var force = (ball1.mass * ball2.mass) / (distance * distance);
+			var ax = force * dx / distance;
+			var ay = force * dy / distance;
+
+			// update ball velocities
+			ball1.velocity.x += ax / ball1.mass;
+			ball1.velocity.y += ay / ball1.mass;
+			ball2.velocity.x -= ax / ball2.mass;
+			ball2.velocity.y -= ay / ball2.mass;
+
+			// update ball positions
+			ball1.x += ball1.velocity.x;
+			ball1.y += ball1.velocity.y;
+			ball2.x += ball2.velocity.x;
+			ball2.y += ball2.velocity.y;
+		}
+
+		// draw gravity animation
+		function drawGravity() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			drawBalls();
+			updateBalls();
+		}
+
+		// animate gravity effect
+		function animate() {
+			requestAnimationFrame(animate);
+			drawGravity();
+		}
+
+		animate();
+	</script>
+</body>
+</html>

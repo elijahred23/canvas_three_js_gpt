@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tower Defense Game</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+      const tileSize = 50;
+      const numTiles = 10;
+      const gameBoard = [];
+
+      const towerTypes = [
+        { name: "Basic Tower", cost: 50, damage: 10, range: 2 },
+        { name: "Advanced Tower", cost: 100, damage: 20, range: 3 },
+        { name: "Super Tower", cost: 200, damage: 30, range: 4 },
+      ];
+
+      let money = 200;
+      let selectedTower = null;
+
+      function init() {
+        for (let i = 0; i < numTiles; i++) {
+          const row = [];
+          for (let j = 0; j < numTiles; j++) {
+            row.push(null);
+          }
+          gameBoard.push(row);
+        }
+      }
+
+      function draw() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < numTiles; i++) {
+          for (let j = 0; j < numTiles; j++) {
+            const x = i * tileSize;
+            const y = j * tileSize;
+            context.fillStyle = "#dddddd";
+            context.fillRect(x, y, tileSize, tileSize);
+            if (gameBoard[i][j]) {
+              const tower = gameBoard[i][j];
+              context.beginPath();
+              context.arc(
+                x + tileSize / 2,
+                y + tileSize / 2,
+                tileSize / 2 - 5,
+                0,
+                2 * Math.PI
+              );
+              context.fillStyle = "#333333";
+              context.fill();
+              context.fillStyle = "#ffffff";
+              context.font = "bold 16px Arial";
+              context.textAlign = "center";
+              context.fillText(
+                towerTypes[tower.type].name,
+                x + tileSize / 2,
+                y + tileSize / 2 + 5
+              );
+            }
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+
+      function placeTower(i, j, type) {
+        if (gameBoard[i][j] !== null) {
+          return false;
+        }
+        if (money < towerTypes[type].cost) {
+          return false;
+        }
+        gameBoard[i][j] = { type };
+        money -= towerTypes[type].cost;
+        return true;
+      }
+
+      canvas.addEventListener("click", function (event) {
+        const i = Math.floor(event.clientX / tileSize);
+        const j = Math.floor(event.clientY / tileSize);
+        if (selectedTower !== null) {
+          if (placeTower(i, j, selectedTower)) {
+            selectedTower = null;
+          }
+        } else {
+          if (gameBoard[i][j] !== null) {
+            selectedTower = gameBoard[i][j].type;
+          }
+        }
+      });
+
+      init();
+      draw();
+    </script>
+  </body>
+</html>
